@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { fetchRaceCards } from "@/lib/racing-api";
+import { toDecimalOdds } from "@/lib/scoring";
 import PickForm from "@/components/PickForm";
 import CountdownTimer from "@/components/CountdownTimer";
 import type { Runner } from "@/lib/racing-api";
@@ -127,7 +128,7 @@ export default async function DayPage({ params }: PageProps) {
           (r) => normalize(r.horse) === normalizedScraped
         );
         const displayName = runner?.horse ?? row.horseName;
-        oddsPerRace[matchedRace.id][displayName] = row.odds;
+        oddsPerRace[matchedRace.id][displayName] = toDecimalOdds(row.odds);
       }
     }
   }

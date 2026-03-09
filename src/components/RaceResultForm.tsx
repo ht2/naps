@@ -36,7 +36,7 @@ export default function RaceResultForm({
         </div>
         <div className="w-full sm:w-40">
           <label htmlFor="winnerSP" className="block text-sm font-medium text-gray-700 mb-1">
-            SP Odds
+            SP (decimal)
           </label>
           <input
             type="number"

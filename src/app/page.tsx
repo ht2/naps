@@ -59,7 +59,7 @@ export default async function Home() {
               Day {d}
               {accaOdds[d] !== undefined && (
                 <span className="ml-1.5 text-xs text-purple-600">
-                  ({accaOdds[d].toFixed(1)}/1)
+                  ({accaOdds[d].toFixed(2)})
                 </span>
               )}
             </Link>

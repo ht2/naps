@@ -96,7 +96,7 @@ export default async function AdminRacesPage() {
                         <>
                           <span className="mx-2 text-sm">·</span>
                           <span className="text-sm font-medium">
-                            Winner: {race.winnerName} (SP {race.winnerSP})
+                            Winner: {race.winnerName} ({race.winnerSP?.toFixed(2)})
                           </span>
                         </>
                       )}

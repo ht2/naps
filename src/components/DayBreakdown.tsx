@@ -75,7 +75,7 @@ export default function DayBreakdown({
               <h2 className="font-bold text-lg">Day {day} Standings</h2>
               {accaOdds !== null && (
                 <span className="text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
-                  Acca: {accaOdds.toFixed(1)}/1
+                  Acca: {accaOdds.toFixed(2)}
                 </span>
               )}
             </div>
@@ -149,7 +149,7 @@ export default function DayBreakdown({
                     </span>
                     {race.winnerSP !== null && (
                       <span className="text-gray-500 ml-1">
-                        ({race.winnerSP}/1)
+                        ({race.winnerSP.toFixed(2)})
                       </span>
                     )}
                   </div>
