@@ -47,6 +47,7 @@ export async function fetchRaceCards(
   const password = process.env.RACING_API_PASSWORD;
 
   if (!username || !password) {
+    console.log("[DEBUG] Racing API: missing credentials", { hasUsername: !!username, hasPassword: !!password });
     return [];
   }
 
@@ -78,10 +79,13 @@ export async function fetchRaceCards(
 
     const json = await res.json();
     const racecards: RaceCard[] = json.racecards ?? [];
+    console.log("[DEBUG] Racing API: got", racecards.length, "total cards, courses:", [...new Set(racecards.map((c: RaceCard) => c.course))]);
 
     cacheByDay[day] = { data: racecards, timestamp: Date.now() };
 
-    return filterByCourse(racecards, course);
+    const filtered = filterByCourse(racecards, course);
+    console.log("[DEBUG] Racing API: after filter for", course, ":", filtered.length, "cards");
+    return filtered;
   } catch (error) {
     console.error("Racing API fetch failed:", error);
     return [];

@@ -65,11 +65,14 @@ export default async function DayPage({ params }: PageProps) {
         ? "tomorrow"
         : null;
 
+  console.log("[DEBUG] Date comparison:", JSON.stringify({ dayDateStr, todayStr, tomorrowStr, apiDay }));
+
   let runnersPerRace: Record<string, Runner[]> = {};
   let raceNamesMap: Record<string, string> = {};
 
   if (apiDay) {
     const raceCards = await fetchRaceCards("Cheltenham", apiDay);
+    console.log("[DEBUG] Race cards returned:", raceCards.length, "for apiDay:", apiDay);
 
     if (raceCards.length > 0) {
       // Match API races to DB races by comparing off_dt to scheduledTime
