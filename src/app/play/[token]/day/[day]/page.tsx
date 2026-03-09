@@ -48,26 +48,41 @@ export default async function DayPage({ params }: PageProps) {
     month: "long",
   });
 
-  // Fetch race cards if this day is today
+  // Fetch race cards if this day is today or tomorrow
   const now = new Date();
-  const isToday =
-    dayDate.toISOString().slice(0, 10) === now.toISOString().slice(0, 10);
+  const todayStr = now.toISOString().slice(0, 10);
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+  const dayDateStr = dayDate.toISOString().slice(0, 10);
+
+  const apiDay =
+    dayDateStr === todayStr
+      ? "today"
+      : dayDateStr === tomorrowStr
+        ? "tomorrow"
+        : null;
+
+  console.log("[RaceCards Debug]", { dayDateStr, todayStr, tomorrowStr, apiDay, startDate: player.competition.startDate, day });
 
   let runnersPerRace: Record<string, Runner[]> = {};
   let raceNamesMap: Record<string, string> = {};
 
-  if (isToday) {
-    const raceCards = await fetchRaceCards();
+  if (apiDay) {
+    const raceCards = await fetchRaceCards("Cheltenham", apiDay);
+    console.log("[RaceCards Debug] API returned", raceCards.length, "cards");
 
     if (raceCards.length > 0) {
-      // Match API races to DB races by comparing off_time to scheduledTime
+      // Match API races to DB races by comparing off_dt to scheduledTime
       for (const race of races) {
         const raceTime = new Date(race.scheduledTime);
-        const hh = raceTime.getHours().toString().padStart(2, "0");
-        const mm = raceTime.getMinutes().toString().padStart(2, "0");
-        const timeStr = `${hh}:${mm}`;
+        const raceHH = raceTime.getUTCHours();
+        const raceMM = raceTime.getUTCMinutes();
 
-        const matchedCard = raceCards.find((card) => card.off_time === timeStr);
+        const matchedCard = raceCards.find((card) => {
+          const offDt = new Date(card.off_dt);
+          return offDt.getUTCHours() === raceHH && offDt.getUTCMinutes() === raceMM;
+        });
         if (matchedCard) {
           runnersPerRace[race.id] = matchedCard.runners;
           raceNamesMap[race.id] = matchedCard.race_name;

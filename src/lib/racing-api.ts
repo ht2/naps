@@ -37,10 +37,11 @@ interface CacheEntry {
 }
 
 const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
-let cache: CacheEntry | null = null;
+const cacheByDay: Record<string, CacheEntry> = {};
 
 export async function fetchRaceCards(
-  course = "Cheltenham"
+  course = "Cheltenham",
+  day: "today" | "tomorrow" = "today"
 ): Promise<RaceCard[]> {
   const username = process.env.RACING_API_USERNAME;
   const password = process.env.RACING_API_PASSWORD;
@@ -50,15 +51,20 @@ export async function fetchRaceCards(
   }
 
   // Return cached data if fresh
-  if (cache && Date.now() - cache.timestamp < CACHE_TTL_MS) {
-    return filterByCourse(cache.data, course);
+  const cached = cacheByDay[day];
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    return filterByCourse(cached.data, course);
   }
 
   try {
     const credentials = Buffer.from(`${username}:${password}`).toString(
       "base64"
     );
-    const res = await fetch("https://api.theracingapi.com/v1/racecards/free", {
+    const url = new URL("https://api.theracingapi.com/v1/racecards/free");
+    if (day === "tomorrow") {
+      url.searchParams.set("day", "tomorrow");
+    }
+    const res = await fetch(url.toString(), {
       headers: {
         Authorization: `Basic ${credentials}`,
       },
@@ -73,7 +79,7 @@ export async function fetchRaceCards(
     const json = await res.json();
     const racecards: RaceCard[] = json.racecards ?? [];
 
-    cache = { data: racecards, timestamp: Date.now() };
+    cacheByDay[day] = { data: racecards, timestamp: Date.now() };
 
     return filterByCourse(racecards, course);
   } catch (error) {
