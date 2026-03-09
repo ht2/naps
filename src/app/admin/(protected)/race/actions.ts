@@ -25,7 +25,7 @@ export async function enterResult(formData: FormData) {
 export async function adminEditPick(formData: FormData) {
   const pickId = formData.get("pickId") as string;
   const horseName = (formData.get("horseName") as string).trim();
-  const isNap = formData.get("isNap") === "true";
+  const isNap = formData.getAll("isNap").includes("true");
   const raceId = formData.get("raceId") as string;
 
   if (!pickId || !horseName) {
