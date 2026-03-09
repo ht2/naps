@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Competition {
+  id                String   @id @default(cuid())
+  name              String
+  year              Int
+  startDate         DateTime
+  entryFee          Int      @default(10)
+  adminPasswordHash String
+  players           Player[]
+  races             Race[]
+  createdAt         DateTime @default(now())
+}
+
+model Player {
+  id            String      @id @default(cuid())
+  name          String
+  token         String      @unique @default(cuid())
+  paid          Boolean     @default(false)
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  picks         Pick[]
+  createdAt     DateTime    @default(now())
+
+  @@index([competitionId])
+}
+
+model Race {
+  id            String      @id @default(cuid())
+  day           Int
+  raceNumber    Int
+  scheduledTime DateTime
+  raceName      String?
+  winnerName    String?
+  winnerSP      Float?
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  picks         Pick[]
+
+  @@unique([competitionId, day, raceNumber])
+  @@index([competitionId])
+}
+
+model Pick {
+  id           String   @id @default(cuid())
+  horseName    String
+  isNap        Boolean  @default(false)
+  isArsenalled Boolean  @default(false)
+  playerId     String
+  player       Player   @relation(fields: [playerId], references: [id])
+  raceId       String
+  race         Race     @relation(fields: [raceId], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@unique([playerId, raceId])
+  @@index([raceId])
+  @@index([playerId])
+}
