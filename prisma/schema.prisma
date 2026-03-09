@@ -8,15 +8,16 @@ datasource db {
 }
 
 model Competition {
-  id                String   @id @default(cuid())
-  name              String
-  year              Int
-  startDate         DateTime
-  entryFee          Int      @default(10)
-  adminPasswordHash String
-  players           Player[]
-  races             Race[]
-  createdAt         DateTime @default(now())
+  id                 String   @id @default(cuid())
+  name               String
+  year               Int
+  startDate          DateTime
+  entryFee           Int      @default(10)
+  adminPasswordHash  String
+  picksRevealedDays  String   @default("")
+  players            Player[]
+  races              Race[]
+  createdAt          DateTime @default(now())
 }
 
 model Player {

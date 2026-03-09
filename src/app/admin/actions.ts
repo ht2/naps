@@ -106,6 +106,39 @@ export async function removePlayer(formData: FormData) {
   revalidatePath("/admin/dashboard");
 }
 
+export async function toggleDayReveal(formData: FormData) {
+  const competitionId = formData.get("competitionId") as string;
+  const day = formData.get("day") as string;
+
+  if (!competitionId || !day) {
+    throw new Error("Competition ID and day are required");
+  }
+
+  const competition = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: { picksRevealedDays: true },
+  });
+
+  if (!competition) throw new Error("Competition not found");
+
+  const revealed = competition.picksRevealedDays
+    ? competition.picksRevealedDays.split(",").filter(Boolean)
+    : [];
+
+  const dayStr = day.toString();
+  const newRevealed = revealed.includes(dayStr)
+    ? revealed.filter((d) => d !== dayStr)
+    : [...revealed, dayStr];
+
+  await prisma.competition.update({
+    where: { id: competitionId },
+    data: { picksRevealedDays: newRevealed.join(",") },
+  });
+
+  revalidatePath("/admin/races");
+  revalidatePath(`/leaderboard/day/${day}`);
+}
+
 export async function togglePayment(formData: FormData) {
   const playerId = formData.get("playerId") as string;
   const currentPaid = formData.get("currentPaid") === "true";

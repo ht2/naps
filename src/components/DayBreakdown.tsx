@@ -15,6 +15,7 @@ interface DayBreakdownProps {
   races: RaceInfo[];
   standings: PlayerStanding[];
   accaOdds: number | null;
+  picksRevealed?: boolean;
 }
 
 function formatPnl(value: number): string {
@@ -40,6 +41,7 @@ export default function DayBreakdown({
   races,
   standings,
   accaOdds,
+  picksRevealed = true,
 }: DayBreakdownProps) {
   const dayRaces = races
     .filter((r) => r.day === day)
@@ -56,54 +58,65 @@ export default function DayBreakdown({
 
   return (
     <div className="space-y-6">
-      {/* Day standings */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="font-bold text-lg">Day {day} Standings</h2>
-          {accaOdds !== null && (
-            <span className="text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
-              Acca: {accaOdds.toFixed(1)}/1
-            </span>
-          )}
+      {!picksRevealed ? (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+          <p className="text-gray-500">
+            Picks for Day {day} have not been revealed yet.
+          </p>
+          <p className="text-sm text-gray-400 mt-1">
+            The admin will reveal picks once all selections are in.
+          </p>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-200 text-left bg-gray-50">
-                <th className="py-2 px-3">#</th>
-                <th className="py-2 px-3">Player</th>
-                <th className="py-2 px-3 text-right">P&L</th>
-                <th className="py-2 px-3 text-right">W</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dayStandings.map((player, idx) => {
-                const isLeader = idx === 0 && player.dayTotal > 0;
-                return (
-                  <tr
-                    key={player.id}
-                    className={`border-b border-gray-100 ${isLeader ? "bg-yellow-50" : ""}`}
-                  >
-                    <td className="py-2 px-3 text-gray-500">{idx + 1}</td>
-                    <td className="py-2 px-3 font-medium">{player.name}</td>
-                    <td
-                      className={`py-2 px-3 text-right font-bold ${pnlColor(player.dayTotal)}`}
-                    >
-                      {formatPnl(player.dayTotal)}
-                    </td>
-                    <td className="py-2 px-3 text-right text-gray-600">
-                      {player.dayWins}
-                    </td>
+      ) : (
+        <>
+          {/* Day standings */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="font-bold text-lg">Day {day} Standings</h2>
+              {accaOdds !== null && (
+                <span className="text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
+                  Acca: {accaOdds.toFixed(1)}/1
+                </span>
+              )}
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200 text-left bg-gray-50">
+                    <th className="py-2 px-3">#</th>
+                    <th className="py-2 px-3">Player</th>
+                    <th className="py-2 px-3 text-right">P&L</th>
+                    <th className="py-2 px-3 text-right">W</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                </thead>
+                <tbody>
+                  {dayStandings.map((player, idx) => {
+                    const isLeader = idx === 0 && player.dayTotal > 0;
+                    return (
+                      <tr
+                        key={player.id}
+                        className={`border-b border-gray-100 ${isLeader ? "bg-yellow-50" : ""}`}
+                      >
+                        <td className="py-2 px-3 text-gray-500">{idx + 1}</td>
+                        <td className="py-2 px-3 font-medium">{player.name}</td>
+                        <td
+                          className={`py-2 px-3 text-right font-bold ${pnlColor(player.dayTotal)}`}
+                        >
+                          {formatPnl(player.dayTotal)}
+                        </td>
+                        <td className="py-2 px-3 text-right text-gray-600">
+                          {player.dayWins}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-      {/* Race-by-race breakdown */}
-      {dayRaces.map((race) => {
+          {/* Race-by-race breakdown */}
+          {dayRaces.map((race) => {
         const racePicks = standings
           .flatMap((s) =>
             s.picks
@@ -195,6 +208,8 @@ export default function DayBreakdown({
           </div>
         );
       })}
+        </>
+      )}
 
       <div className="text-center">
         <Link

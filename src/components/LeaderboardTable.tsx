@@ -8,6 +8,7 @@ interface LeaderboardTableProps {
     year: number;
     entryFee: number;
     startDate: Date;
+    picksRevealedDays: string;
   };
 }
 

@@ -24,6 +24,11 @@ export default async function DayPage({ params }: PageProps) {
   const { standings, accaOdds, races, competition: compInfo } =
     await getLeaderboard(competition.id);
 
+  const revealedDays = compInfo?.picksRevealedDays
+    ? compInfo.picksRevealedDays.split(",").filter(Boolean).map(Number)
+    : [];
+  const picksRevealed = revealedDays.includes(day);
+
   return (
     <main className="min-h-screen">
       <header className="bg-white border-b border-gray-200 shadow-sm">
@@ -43,6 +48,7 @@ export default async function DayPage({ params }: PageProps) {
           races={races}
           standings={standings}
           accaOdds={accaOdds[day] ?? null}
+          picksRevealed={picksRevealed}
         />
       </div>
     </main>

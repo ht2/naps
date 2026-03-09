@@ -44,12 +44,13 @@ export async function getLeaderboard(competitionId: string): Promise<{
     year: number;
     entryFee: number;
     startDate: Date;
+    picksRevealedDays: string;
   } | null;
 }> {
   const [competition, players, races] = await Promise.all([
     prisma.competition.findUnique({
       where: { id: competitionId },
-      select: { name: true, year: true, entryFee: true, startDate: true },
+      select: { name: true, year: true, entryFee: true, startDate: true, picksRevealedDays: true },
     }),
     prisma.player.findMany({
       where: { competitionId },
