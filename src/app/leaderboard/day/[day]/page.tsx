@@ -32,13 +32,20 @@ export default async function DayPage({ params }: PageProps) {
   return (
     <main className="min-h-screen">
       <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">
             {compInfo?.name ?? "NAPS"}{" "}
             <span className="text-gray-500 font-normal text-lg">
               Day {day}
             </span>
           </h1>
+          <a
+            href="/admin"
+            target="_blank"
+            className="text-sm text-gray-400 hover:text-gray-600 font-medium"
+          >
+            Admin
+          </a>
         </div>
       </header>
 

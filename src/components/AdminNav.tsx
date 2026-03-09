@@ -20,6 +20,13 @@ export default function AdminNav() {
             >
               Races
             </Link>
+            <a
+              href="/"
+              target="_blank"
+              className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+            >
+              Leaderboard
+            </a>
           </div>
           <form action={logoutAdmin}>
             <button

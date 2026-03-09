@@ -43,6 +43,13 @@ export default async function Home() {
                 </span>
               </p>
             </div>
+            <a
+              href="/admin"
+              target="_blank"
+              className="text-sm text-gray-400 hover:text-gray-600 font-medium"
+            >
+              Admin
+            </a>
           </div>
         </div>
       </header>
