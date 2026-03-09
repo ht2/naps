@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import DayOverview from "@/components/DayOverview";
 
@@ -65,7 +66,15 @@ export default async function PlayerPage({ params }: PageProps) {
   return (
     <main className="max-w-lg mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-1">{competition.name}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold mb-1">{competition.name}</h1>
+          <Link
+            href="/"
+            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+          >
+            Leaderboard
+          </Link>
+        </div>
         <p className="text-gray-600">
           Welcome, <span className="font-medium">{player.name}</span>
         </p>

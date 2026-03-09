@@ -149,12 +149,20 @@ export default async function DayPage({ params }: PageProps) {
 
   return (
     <main className="max-w-lg mx-auto px-4 py-8">
-      <Link
-        href={`/play/${token}`}
-        className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 mb-6"
-      >
-        &larr; Back to overview
-      </Link>
+      <div className="flex items-center justify-between mb-6">
+        <Link
+          href={`/play/${token}`}
+          className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
+        >
+          &larr; Back to overview
+        </Link>
+        <Link
+          href="/"
+          className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+        >
+          Leaderboard
+        </Link>
+      </div>
 
       <div className="mb-6">
         <div className="flex items-center justify-between">
