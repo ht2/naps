@@ -6,6 +6,8 @@ import PickForm from "@/components/PickForm";
 import CountdownTimer from "@/components/CountdownTimer";
 import type { Runner } from "@/lib/racing-api";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ token: string; day: string }>;
 }
@@ -63,14 +65,11 @@ export default async function DayPage({ params }: PageProps) {
         ? "tomorrow"
         : null;
 
-  console.log("[RaceCards Debug]", { dayDateStr, todayStr, tomorrowStr, apiDay, startDate: player.competition.startDate, day });
-
   let runnersPerRace: Record<string, Runner[]> = {};
   let raceNamesMap: Record<string, string> = {};
 
   if (apiDay) {
     const raceCards = await fetchRaceCards("Cheltenham", apiDay);
-    console.log("[RaceCards Debug] API returned", raceCards.length, "cards");
 
     if (raceCards.length > 0) {
       // Match API races to DB races by comparing off_dt to scheduledTime
