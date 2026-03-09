@@ -127,7 +127,7 @@ function CompetitionDetails({
         <div>
           <span className="text-gray-500">Start Date:</span>{" "}
           <span className="font-medium text-gray-800">
-            {new Date(competition.startDate).toLocaleDateString()}
+            {new Date(competition.startDate).toLocaleDateString("en-GB")}
           </span>
         </div>
         <div>

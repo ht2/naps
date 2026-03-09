@@ -7,6 +7,7 @@ interface RaceCardProps {
   selectedHorse: string;
   onSelect: (horseName: string) => void;
   locked: boolean;
+  odds?: Record<string, string>;
 }
 
 function lbsToStLb(lbs: string): string {
@@ -22,6 +23,7 @@ export default function RaceCard({
   selectedHorse,
   onSelect,
   locked,
+  odds = {},
 }: RaceCardProps) {
   return (
     <div className="mt-2 space-y-1.5">
@@ -71,6 +73,11 @@ export default function RaceCard({
               </div>
 
               <div className="flex items-center gap-3 shrink-0 text-xs text-gray-600">
+                {odds[runner.horse] && (
+                  <span className="font-semibold text-green-700 text-sm">
+                    {odds[runner.horse]}
+                  </span>
+                )}
                 {runner.form && (
                   <span className="font-mono tracking-tight">
                     {runner.form}

@@ -98,6 +98,40 @@ export default async function DayPage({ params }: PageProps) {
     }
   }
 
+  // Look up cached odds for each race
+  let oddsPerRace: Record<string, Record<string, string>> = {};
+
+  if (Object.keys(runnersPerRace).length > 0) {
+    const raceDateStr = dayDate.toISOString().slice(0, 10);
+    const oddsRows = await prisma.horseOdds.findMany({
+      where: { raceDate: raceDateStr },
+    });
+
+    // Normalize name for fuzzy matching (remove apostrophes, lowercase)
+    const normalize = (n: string) =>
+      n.toLowerCase().replace(/[''`]/g, "").replace(/\s+/g, " ").trim();
+
+    for (const row of oddsRows) {
+      const matchedRace = races.find((r) => {
+        const rt = new Date(r.scheduledTime);
+        const hh = rt.getUTCHours().toString().padStart(2, "0");
+        const mm = rt.getUTCMinutes().toString().padStart(2, "0");
+        return `${hh}:${mm}` === row.raceTime;
+      });
+      if (matchedRace) {
+        if (!oddsPerRace[matchedRace.id]) oddsPerRace[matchedRace.id] = {};
+        // Try to match scraped name to runner name from The Racing API
+        const runners = runnersPerRace[matchedRace.id] ?? [];
+        const normalizedScraped = normalize(row.horseName);
+        const runner = runners.find(
+          (r) => normalize(r.horse) === normalizedScraped
+        );
+        const displayName = runner?.horse ?? row.horseName;
+        oddsPerRace[matchedRace.id][displayName] = row.odds;
+      }
+    }
+  }
+
   const nextRace = races.find((r) => r.scheduledTime > now) ?? null;
 
   const raceData = races.map((r) => ({
@@ -147,6 +181,7 @@ export default async function DayPage({ params }: PageProps) {
           playerToken={token}
           day={day}
           runnersPerRace={runnersPerRace}
+          oddsPerRace={oddsPerRace}
         />
       )}
     </main>

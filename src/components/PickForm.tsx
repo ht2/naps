@@ -26,6 +26,7 @@ interface PickFormProps {
   playerToken: string;
   day: number;
   runnersPerRace?: Record<string, Runner[]>;
+  oddsPerRace?: Record<string, Record<string, string>>;
 }
 
 export default function PickForm({
@@ -34,6 +35,7 @@ export default function PickForm({
   playerToken,
   day,
   runnersPerRace = {},
+  oddsPerRace = {},
 }: PickFormProps) {
   const pickMap = new Map(existingPicks.map((p) => [p.raceId, p]));
 
@@ -126,6 +128,7 @@ export default function PickForm({
                       }))
                     }
                     locked={locked}
+                    odds={oddsPerRace[race.id]}
                   />
                   {!locked && (
                     <div className="mt-2">

@@ -63,3 +63,15 @@ model Pick {
   @@index([raceId])
   @@index([playerId])
 }
+
+model HorseOdds {
+  id        String   @id @default(cuid())
+  raceDate  String
+  raceTime  String
+  horseName String
+  odds      String
+  fetchedAt DateTime @default(now())
+
+  @@unique([raceDate, raceTime, horseName])
+  @@index([raceDate, raceTime])
+}
