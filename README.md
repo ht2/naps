@@ -14,6 +14,7 @@ A horse racing tipping competition app built for festivals like Cheltenham. Play
 - Results are entered by the admin with the winner's name and SP (starting price)
 - P&L is calculated: `winnings = stake × SP` (NAP stake = 3, regular = 1)
 - The admin can toggle per-day **pick reveal** to control when other players can see each other's selections
+- Before picks are revealed, the leaderboard shows each player's pick status and NAP confirmation
 
 ### Scoring
 
@@ -22,7 +23,7 @@ A horse racing tipping competition app built for festivals like Cheltenham. Play
 | Regular   | 1     | 1 × SP     | -1          |
 | NAP       | 3     | 3 × SP     | -3          |
 
-All odds are displayed in **decimal format** (e.g. 4.00 means 3/1).
+Odds can be toggled between **decimal** (e.g. 4.00) and **fractional** (e.g. 3/1) display on all pages. Large odds include thousands separators.
 
 ## Tech Stack
 
@@ -90,7 +91,9 @@ src/
 │   ├── LeaderboardTable.tsx              # Main standings table
 │   ├── DayBreakdown.tsx                  # Per-day race results & picks
 │   ├── PlayerPicksTable.tsx              # Admin pick editing
-│   ├── PickForm.tsx                      # Player pick submission form
+│   ├── PickForm.tsx                      # Player pick submission form (collapsible races)
+│   ├── RaceCard.tsx                      # Runner display with odds, form, stats
+│   ├── CountdownTimer.tsx               # Next race countdown
 │   └── AdminNav.tsx                      # Admin navigation
 ├── lib/
 │   ├── prisma.ts                         # Prisma client singleton
@@ -99,7 +102,8 @@ src/
 prisma/
 │   └── schema.prisma                     # Database schema
 scripts/
-│   └── scrape-odds.ts                    # Oddschecker odds scraper
+│   ├── scrape-odds.ts                    # Oddschecker odds scraper
+│   └── run-scraper.sh                   # Cron wrapper for scheduled scraping
 Dockerfile                                # Multi-stage production build
 ```
 
@@ -122,7 +126,9 @@ The scraper fetches live odds from Oddschecker using Playwright:
 npm run scrape-odds
 ```
 
-This updates odds for upcoming races via the `/api/odds` endpoint on both local and production environments.
+This scrapes odds for both today and tomorrow's races (skipping tomorrow on the last festival day) and pushes to both local and production via the `/api/odds` endpoint.
+
+A cron wrapper (`scripts/run-scraper.sh`) is provided for scheduled runs every 5 minutes, with timestamped logs written to `logs/`.
 
 ## License
 
