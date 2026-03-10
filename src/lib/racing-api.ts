@@ -8,6 +8,10 @@ export interface Runner {
   form: string;
   age: string;
   sex_code: string;
+  colour: string;
+  region: string;
+  owner: string;
+  last_run: string;
   lbs: string;
   ofr: string;
   headgear: string;

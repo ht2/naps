@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { PlayerStanding } from "@/lib/leaderboard";
+import { formatWithCommas } from "@/lib/scoring";
 
 interface RaceInfo {
   id: string;
@@ -36,6 +40,52 @@ function formatTime(date: Date): string {
   });
 }
 
+/** Convert decimal odds (e.g. 4.0) to fractional string (e.g. "3/1") */
+function decimalToFractional(decimal: number): string {
+  const fractional = decimal - 1;
+  // Common fractions lookup for clean display
+  const common: [number, string][] = [
+    [0.2, "1/5"], [0.25, "1/4"], [0.33, "1/3"], [0.4, "2/5"], [0.5, "1/2"],
+    [0.67, "2/3"], [0.8, "4/5"], [1, "1/1"], [1.2, "6/5"], [1.25, "5/4"],
+    [1.33, "4/3"], [1.4, "7/5"], [1.5, "3/2"], [1.6, "8/5"], [1.67, "5/3"],
+    [1.8, "9/5"], [2, "2/1"], [2.25, "9/4"], [2.5, "5/2"], [2.75, "11/4"],
+    [3, "3/1"], [3.5, "7/2"], [4, "4/1"], [4.5, "9/2"], [5, "5/1"],
+    [5.5, "11/2"], [6, "6/1"], [7, "7/1"], [7.5, "15/2"], [8, "8/1"],
+    [9, "9/1"], [10, "10/1"], [11, "11/1"], [12, "12/1"], [14, "14/1"],
+    [16, "16/1"], [20, "20/1"], [25, "25/1"], [33, "33/1"], [40, "40/1"],
+    [50, "50/1"], [66, "66/1"], [100, "100/1"],
+  ];
+  let closest = common[0];
+  let minDiff = Math.abs(fractional - closest[0]);
+  for (const entry of common) {
+    const diff = Math.abs(fractional - entry[0]);
+    if (diff < minDiff) {
+      minDiff = diff;
+      closest = entry;
+    }
+  }
+  if (minDiff < 0.05) {
+    // Format the fractional parts with commas if large
+    const [num, den] = closest[1].split("/");
+    const n = parseInt(num);
+    const d = parseInt(den);
+    const fmtNum = n >= 1000 ? n.toLocaleString("en-GB") : num;
+    const fmtDen = d >= 1000 ? d.toLocaleString("en-GB") : den;
+    return `${fmtNum}/${fmtDen}`;
+  }
+  // Fallback: show as n/1
+  if (Number.isInteger(fractional)) {
+    const fmtN = fractional >= 1000 ? fractional.toLocaleString("en-GB") : String(fractional);
+    return `${fmtN}/1`;
+  }
+  return formatWithCommas(decimal);
+}
+
+function formatOdds(sp: number, format: "decimal" | "fractional"): string {
+  if (format === "decimal") return formatWithCommas(sp);
+  return decimalToFractional(sp);
+}
+
 export default function DayBreakdown({
   day,
   races,
@@ -43,6 +93,8 @@ export default function DayBreakdown({
   accaOdds,
   picksRevealed = true,
 }: DayBreakdownProps) {
+  const [oddsFormat, setOddsFormat] = useState<"decimal" | "fractional">("decimal");
+
   const dayRaces = races
     .filter((r) => r.day === day)
     .sort((a, b) => a.raceNumber - b.raceNumber);
@@ -69,13 +121,40 @@ export default function DayBreakdown({
         </div>
       ) : (
         <>
+          {/* Odds format toggle */}
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-gray-500 font-medium">Odds:</span>
+            <button
+              type="button"
+              onClick={() => setOddsFormat("decimal")}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                oddsFormat === "decimal"
+                  ? "bg-green-100 text-green-800 border border-green-300"
+                  : "bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200"
+              }`}
+            >
+              Decimal
+            </button>
+            <button
+              type="button"
+              onClick={() => setOddsFormat("fractional")}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                oddsFormat === "fractional"
+                  ? "bg-green-100 text-green-800 border border-green-300"
+                  : "bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200"
+              }`}
+            >
+              Fractional
+            </button>
+          </div>
+
           {/* Day standings */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
               <h2 className="font-bold text-lg">Day {day} Standings</h2>
               {accaOdds !== null && (
                 <span className="text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
-                  Acca: {accaOdds.toFixed(2)}
+                  Acca: {formatOdds(accaOdds, oddsFormat)}
                 </span>
               )}
             </div>
@@ -137,10 +216,7 @@ export default function DayBreakdown({
             <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold">
-                  Race {race.raceNumber}{" "}
-                  <span className="text-gray-500 font-normal text-sm">
-                    {formatTime(race.scheduledTime)}
-                  </span>
+                  {formatTime(race.scheduledTime)}
                 </h3>
                 {race.winnerName && (
                   <div className="text-sm">
@@ -149,7 +225,7 @@ export default function DayBreakdown({
                     </span>
                     {race.winnerSP !== null && (
                       <span className="text-gray-500 ml-1">
-                        ({race.winnerSP.toFixed(2)})
+                        ({formatOdds(race.winnerSP, oddsFormat)})
                       </span>
                     )}
                   </div>

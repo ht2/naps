@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { formatWithCommas } from "@/lib/scoring";
 import { toggleDayReveal } from "../../actions";
 
 export default async function AdminRacesPage() {
@@ -96,7 +97,7 @@ export default async function AdminRacesPage() {
                         <>
                           <span className="mx-2 text-sm">·</span>
                           <span className="text-sm font-medium">
-                            Winner: {race.winnerName} ({race.winnerSP?.toFixed(2)})
+                            Winner: {race.winnerName} ({race.winnerSP != null ? formatWithCommas(race.winnerSP) : ""})
                           </span>
                         </>
                       )}

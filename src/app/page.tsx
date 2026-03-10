@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getActiveCompetition, getLeaderboard } from "@/lib/leaderboard";
+import { formatWithCommas } from "@/lib/scoring";
 import LeaderboardTable from "@/components/LeaderboardTable";
 
 export const dynamic = "force-dynamic";
@@ -66,7 +67,7 @@ export default async function Home() {
               Day {d}
               {accaOdds[d] !== undefined && (
                 <span className="ml-1.5 text-xs text-purple-600">
-                  ({accaOdds[d].toFixed(2)})
+                  ({formatWithCommas(accaOdds[d])})
                 </span>
               )}
             </Link>

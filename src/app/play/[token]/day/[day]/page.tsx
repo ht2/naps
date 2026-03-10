@@ -99,14 +99,23 @@ export default async function DayPage({ params }: PageProps) {
     }
   }
 
-  // Look up cached odds for each race
+  // Look up cached odds for each race (both decimal and fractional)
   let oddsPerRace: Record<string, Record<string, string>> = {};
+  let fractionalOddsPerRace: Record<string, Record<string, string>> = {};
+  let oddsUpdatedAt: string | null = null;
 
   if (Object.keys(runnersPerRace).length > 0) {
     const raceDateStr = dayDate.toISOString().slice(0, 10);
     const oddsRows = await prisma.horseOdds.findMany({
       where: { raceDate: raceDateStr },
     });
+
+    if (oddsRows.length > 0) {
+      const latest = oddsRows.reduce((max, row) =>
+        row.fetchedAt > max.fetchedAt ? row : max
+      );
+      oddsUpdatedAt = latest.fetchedAt.toISOString();
+    }
 
     // Normalize name for fuzzy matching (remove apostrophes, lowercase)
     const normalize = (n: string) =>
@@ -121,6 +130,7 @@ export default async function DayPage({ params }: PageProps) {
       });
       if (matchedRace) {
         if (!oddsPerRace[matchedRace.id]) oddsPerRace[matchedRace.id] = {};
+        if (!fractionalOddsPerRace[matchedRace.id]) fractionalOddsPerRace[matchedRace.id] = {};
         // Try to match scraped name to runner name from The Racing API
         const runners = runnersPerRace[matchedRace.id] ?? [];
         const normalizedScraped = normalize(row.horseName);
@@ -129,6 +139,7 @@ export default async function DayPage({ params }: PageProps) {
         );
         const displayName = runner?.horse ?? row.horseName;
         oddsPerRace[matchedRace.id][displayName] = toDecimalOdds(row.odds);
+        fractionalOddsPerRace[matchedRace.id][displayName] = row.odds;
       }
     }
   }
@@ -191,6 +202,8 @@ export default async function DayPage({ params }: PageProps) {
           day={day}
           runnersPerRace={runnersPerRace}
           oddsPerRace={oddsPerRace}
+          fractionalOddsPerRace={fractionalOddsPerRace}
+          oddsUpdatedAt={oddsUpdatedAt}
         />
       )}
     </main>

@@ -39,13 +39,21 @@ export default async function DayPage({ params }: PageProps) {
               Day {day}
             </span>
           </h1>
-          <a
-            href="/admin"
-            target="_blank"
-            className="text-sm text-gray-400 hover:text-gray-600 font-medium"
-          >
-            Admin
-          </a>
+          <div className="flex items-center gap-4">
+            <a
+              href="/"
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Leaderboard
+            </a>
+            <a
+              href="/admin"
+              target="_blank"
+              className="text-sm text-gray-400 hover:text-gray-600 font-medium"
+            >
+              Admin
+            </a>
+          </div>
         </div>
       </header>
 
