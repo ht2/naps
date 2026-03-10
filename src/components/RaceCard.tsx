@@ -55,38 +55,33 @@ export default function RaceCard({
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 text-xs font-bold text-gray-700 shrink-0">
+                  <span title="Saddle cloth number" className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 text-xs font-bold text-gray-700 shrink-0">
                     {runner.number}
                   </span>
-                  <span className="font-semibold text-sm truncate">
+                  <span title="Horse name" className="font-semibold text-sm truncate">
                     {runner.horse}
                   </span>
-                  {runner.draw && (
-                    <span className="text-xs text-gray-400">
-                      ({runner.draw})
-                    </span>
-                  )}
-                  {runner.headgear && (
-                    <span className="text-xs text-amber-600 font-medium">
+{runner.headgear && (
+                    <span title="Headgear" className="text-xs text-amber-600 font-medium">
                       {runner.headgear}
                     </span>
                   )}
                 </div>
                 <div className="mt-0.5 text-xs text-gray-500 truncate">
-                  <span>{runner.jockey}</span>
+                  <span title="Jockey">{runner.jockey}</span>
                   <span className="mx-1">/</span>
-                  <span>{runner.trainer}</span>
+                  <span title="Trainer">{runner.trainer}</span>
                 </div>
               </div>
 
               <div className="flex items-center gap-3 shrink-0 text-xs text-gray-600">
                 {odds[runner.horse] && (
-                  <span className="font-semibold text-green-700 text-sm">
+                  <span title="Odds (decimal)" className="font-semibold text-green-700 text-sm">
                     {odds[runner.horse]}
                   </span>
                 )}
                 {runner.form && (
-                  <span className="font-mono tracking-tight">
+                  <span title="Recent form" className="font-mono tracking-tight">
                     {runner.form}
                   </span>
                 )}
@@ -95,8 +90,8 @@ export default function RaceCard({
                     OR {runner.ofr}
                   </span>
                 )}
-                <span title="Weight">{lbsToStLb(runner.lbs)}</span>
-                <span className="text-gray-400">
+                <span title="Weight (st-lb)">{lbsToStLb(runner.lbs)}</span>
+                <span title="Age &amp; sex" className="text-gray-400">
                   {runner.age}{runner.sex_code}
                 </span>
               </div>

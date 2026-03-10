@@ -71,6 +71,44 @@ export default function PickForm({
       <input type="hidden" name="playerToken" value={playerToken} />
       <input type="hidden" name="day" value={day} />
 
+      <details className="mb-4 bg-gray-50 border border-gray-200 rounded-lg text-sm">
+        <summary className="px-4 py-2.5 cursor-pointer font-medium text-gray-600 hover:text-gray-800">
+          Race card legend
+        </summary>
+        <div className="px-4 pb-3 pt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs text-gray-600">
+          <div>
+            <p className="font-semibold text-gray-700 mb-1">Sex codes</p>
+            <ul className="space-y-0.5">
+              <li><span className="font-mono font-bold w-4 inline-block">C</span> Colt (young male)</li>
+              <li><span className="font-mono font-bold w-4 inline-block">F</span> Filly (young female)</li>
+              <li><span className="font-mono font-bold w-4 inline-block">G</span> Gelding (castrated male)</li>
+              <li><span className="font-mono font-bold w-4 inline-block">M</span> Mare (older female, 5+)</li>
+              <li><span className="font-mono font-bold w-4 inline-block">H</span> Horse (older entire male, 5+)</li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-semibold text-gray-700 mb-1">Headgear</p>
+            <ul className="space-y-0.5">
+              <li><span className="font-mono font-bold w-4 inline-block">b</span> Blinkers</li>
+              <li><span className="font-mono font-bold w-4 inline-block">t</span> Tongue tie</li>
+              <li><span className="font-mono font-bold w-4 inline-block">v</span> Visor</li>
+              <li><span className="font-mono font-bold w-4 inline-block">h</span> Hood</li>
+              <li><span className="font-mono font-bold w-4 inline-block">c</span> Cheekpieces</li>
+              <li><span className="font-mono font-bold w-4 inline-block">e</span> Eye shield</li>
+              <li><span className="font-mono font-bold w-4 inline-block">p</span> Ear plugs</li>
+            </ul>
+          </div>
+          <div className="sm:col-span-2 mt-1 pt-1 border-t border-gray-200">
+            <p className="font-semibold text-gray-700 mb-1">Other fields</p>
+            <ul className="space-y-0.5">
+              <li><span className="font-semibold">Form</span> — Recent finishing positions (1=won, 0=10th+, F=fell, P=pulled up, U=unseated)</li>
+              <li><span className="font-semibold">OR</span> — Official Rating (higher = better, used for handicaps)</li>
+              <li><span className="font-semibold">Weight</span> — Carried weight in stones-pounds (e.g. 11-4 = 11st 4lb)</li>
+            </ul>
+          </div>
+        </div>
+      </details>
+
       <div className="space-y-4">
         {races.map((race) => {
           const existing = pickMap.get(race.id);
