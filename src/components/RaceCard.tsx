@@ -25,9 +25,16 @@ export default function RaceCard({
   locked,
   odds = {},
 }: RaceCardProps) {
+  // Sort runners by odds (lowest price first), no-odds horses at the end
+  const sortedRunners = [...runners].sort((a, b) => {
+    const oddsA = odds[a.horse] ? parseFloat(odds[a.horse]) : Infinity;
+    const oddsB = odds[b.horse] ? parseFloat(odds[b.horse]) : Infinity;
+    return oddsA - oddsB;
+  });
+
   return (
     <div className="mt-2 space-y-1.5">
-      {runners.map((runner) => {
+      {sortedRunners.map((runner) => {
         const isSelected =
           selectedHorse.toLowerCase() === runner.horse.toLowerCase();
 

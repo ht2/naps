@@ -43,7 +43,7 @@ async function scrapeRace(
   raceTime: string
 ): Promise<HorseOdds[]> {
   const browser = await chromium.launch({
-    headless: false,
+    headless: true,
     args: ["--disable-blink-features=AutomationControlled"],
   });
   const context = await browser.newContext({
@@ -126,20 +126,10 @@ async function pushOdds(
   }
 }
 
-async function main() {
-  const dateArg = process.argv[2];
-  let raceDate: string;
+const FESTIVAL_LAST_DAY = "2026-03-13";
 
-  if (dateArg) {
-    raceDate = dateArg;
-  } else {
-    // Default to tomorrow
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    raceDate = tomorrow.toISOString().slice(0, 10);
-  }
-
-  console.log(`Scraping Cheltenham odds for ${raceDate}`);
+async function scrapeAndPushDate(raceDate: string) {
+  console.log(`\n=== Scraping Cheltenham odds for ${raceDate} ===`);
 
   for (const raceTime of RACE_TIMES) {
     console.log(`\nRace ${raceTime}:`);
@@ -155,6 +145,28 @@ async function main() {
 
     for (const target of TARGETS) {
       await pushOdds(target, raceDate, raceTime, horses);
+    }
+  }
+}
+
+async function main() {
+  const dateArg = process.argv[2];
+
+  if (dateArg) {
+    // Manual single-date mode
+    await scrapeAndPushDate(dateArg);
+  } else {
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+
+    // Scrape today
+    await scrapeAndPushDate(todayStr);
+
+    // Scrape tomorrow unless today is the last day of the festival
+    if (todayStr !== FESTIVAL_LAST_DAY) {
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      await scrapeAndPushDate(tomorrow.toISOString().slice(0, 10));
     }
   }
 
