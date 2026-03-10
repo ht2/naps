@@ -69,9 +69,6 @@ export default function LeaderboardTable({
                 </td>
                 <td className="py-3 px-2">
                   <span className="font-medium">{player.name}</span>
-                  {!player.paid && (
-                    <span className="ml-1 text-xs text-red-500">(unpaid)</span>
-                  )}
                 </td>
                 {days.map((d) => {
                   const val = player.dayPnl[d] ?? 0;
