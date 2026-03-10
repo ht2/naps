@@ -111,13 +111,51 @@ export default function DayBreakdown({
   return (
     <div className="space-y-6">
       {!picksRevealed ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
-          <p className="text-gray-500">
-            Picks for Day {day} have not been revealed yet.
-          </p>
-          <p className="text-sm text-gray-400 mt-1">
-            The admin will reveal picks once all selections are in.
-          </p>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-200">
+            <h2 className="font-bold text-lg">Day {day} Pick Status</h2>
+            <p className="text-sm text-gray-400 mt-0.5">
+              Picks will be revealed before the off.
+            </p>
+          </div>
+          <div className="divide-y divide-gray-100">
+            {standings
+              .map((s) => {
+                const dayPicks = s.picks.filter((p) => p.day === day);
+                const dayPickCount = dayPicks.length;
+                const hasNap = dayPicks.some((p) => p.isNap);
+                const totalRaces = dayRaces.length;
+                const allIn = dayPickCount >= totalRaces && totalRaces > 0 && hasNap;
+                return { name: s.name, id: s.id, dayPickCount, totalRaces, allIn, hasNap };
+              })
+              .sort((a, b) => b.dayPickCount - a.dayPickCount || a.name.localeCompare(b.name))
+              .map((player) => (
+                <div
+                  key={player.id}
+                  className="px-4 py-2.5 flex items-center justify-between text-sm"
+                >
+                  <span className="font-medium">{player.name}</span>
+                  <div className="flex items-center gap-2">
+                    {player.allIn ? (
+                      <span className="text-green-700 font-semibold">
+                        Picks in the bag!
+                      </span>
+                    ) : (
+                      <>
+                        <span className="text-gray-500">
+                          {player.dayPickCount}/{player.totalRaces} picks
+                        </span>
+                        {player.dayPickCount > 0 && !player.hasNap && (
+                          <span className="text-red-600 font-semibold text-xs">
+                            No NAP!
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
         </div>
       ) : (
         <>
