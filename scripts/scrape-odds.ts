@@ -1,4 +1,7 @@
 import { chromium } from "playwright";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 const TARGETS = [
   { url: "http://localhost:3000/api/odds", label: "local" },
@@ -126,7 +129,14 @@ async function pushOdds(
   }
 }
 
-const FESTIVAL_LAST_DAY = "2026-03-13";
+async function getLastFestivalDay(): Promise<string | null> {
+  const lastRace = await prisma.race.findFirst({
+    orderBy: { scheduledTime: "desc" },
+    select: { scheduledTime: true },
+  });
+  if (!lastRace) return null;
+  return lastRace.scheduledTime.toISOString().slice(0, 10);
+}
 
 async function scrapeAndPushDate(raceDate: string) {
   console.log(`\n=== Scraping Cheltenham odds for ${raceDate} ===`);
@@ -163,13 +173,15 @@ async function main() {
     await scrapeAndPushDate(todayStr);
 
     // Scrape tomorrow unless today is the last day of the festival
-    if (todayStr !== FESTIVAL_LAST_DAY) {
+    const lastDay = await getLastFestivalDay();
+    if (lastDay && todayStr !== lastDay) {
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
       await scrapeAndPushDate(tomorrow.toISOString().slice(0, 10));
     }
   }
 
+  await prisma.$disconnect();
   console.log("\nDone!");
 }
 
